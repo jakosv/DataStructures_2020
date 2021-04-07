@@ -19,5 +19,9 @@ public:
     virtual void erase(size_t i, size_t len) = 0;
     virtual void popBack() = 0;
     
+    virtual size_t size() const = 0;
+    
+    virtual size_t find(const ValueType& value) const = 0;
+
     virtual ~IVector() = default;
 };
