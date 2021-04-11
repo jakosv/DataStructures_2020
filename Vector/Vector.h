@@ -10,8 +10,8 @@ private:
     ValueType* _data;
 public:
     Vector(const size_t size = 0);
-    Vector(Vector& v);
-    Vector(Vector&& v) noexcept;
+    Vector(Vector& vector);
+    Vector(Vector&& vector) noexcept;
 
     ~Vector();
 

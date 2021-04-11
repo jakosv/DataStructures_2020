@@ -1,6 +1,5 @@
 #include "Vector.h"
 
-#include <string.h>
 #include <stdexcept>
 
 Vector::Vector(const size_t size) {
@@ -16,7 +15,9 @@ Vector::Vector(Vector& vector) {
     _data = nullptr;
     if (_size > 0) {
         _data = new ValueType[_size];
-        memcpy(_data, vector._data, _size);
+        for (size_t i = 0; i < _size; ++i) {
+            _data[i] = vector[i];
+        }
     }
 }
 
@@ -61,6 +62,7 @@ void Vector::insert(const ValueType& value, const size_t idx) {
     if (idx > size()) {
         throw std::out_of_range("Out of range");
     }
+
     ValueType* newData = new ValueType[size() + 1];
     for (size_t i = 0; i < size() + 1; i++) {
         if (i < idx) {
