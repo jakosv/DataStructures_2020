@@ -160,3 +160,47 @@ size_t Vector::find(const ValueType& value) const {
     }
     return res;
 }
+
+
+Vector::Iterator::Iterator(ValueType* ptr) : _ptr(ptr) {}
+
+ValueType& Vector::Iterator::operator*() {
+    return *_ptr;
+}
+
+ValueType* Vector::Iterator::operator->() {
+    return _ptr;
+}
+
+// prefix
+Vector::Iterator& Vector::Iterator::operator++() {
+    _ptr++;
+    return *this;
+}
+
+// postfix
+Vector::Iterator Vector::Iterator::operator++(int) {
+    Iterator temp = *this;
+    ++(*this);
+    return temp;
+}
+
+bool Vector::Iterator::operator!=(const Vector::Iterator& other) {
+    return _ptr != other._ptr;
+}
+
+bool Vector::Iterator::operator==(const Vector::Iterator& other) {
+    return !(*this != other);
+}
+
+std::ptrdiff_t Vector::Iterator::operator-(const Vector::Iterator& other) {
+    return _ptr - other._ptr;
+}
+
+Vector::Iterator Vector::begin() {
+    return Vector::Iterator(&_data[0]);
+}
+
+Vector::Iterator Vector::end() noexcept {
+    return Vector::Iterator(&_data[size()]);
+}

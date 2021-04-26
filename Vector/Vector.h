@@ -13,6 +13,27 @@ private:
     size_t _size;
     ValueType* _data;
 public:
+    
+    struct Iterator {
+    public:
+        Iterator(ValueType* ptr);
+
+        ValueType& operator*();
+        ValueType* operator->();
+        // prefix
+        Iterator& operator++();
+        // postfix
+        Iterator operator++(int);
+        bool operator!=(const Iterator& other);
+        bool operator==(const Iterator& other);
+        std::ptrdiff_t operator-(const Iterator& other);
+    private:
+        ValueType* _ptr;
+    };
+    
+    Iterator begin();
+    Iterator end() noexcept;
+
     Vector(const size_t size = 0);
     Vector(Vector& vector);
     Vector(Vector&& vector) noexcept;
