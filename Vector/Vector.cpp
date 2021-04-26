@@ -4,33 +4,35 @@
 
 Vector::Vector(const size_t size) {
     _size = size;
-    _data = nullptr;
+    _capacity = 1;
     if (_size > 0) {
-        _data = new ValueType[size];
+        _capacity = _size * ResizeFactor;
     }
+    _data = new ValueType[_capacity];
 }
 
 Vector::Vector(Vector& vector) {
     _size = vector.size();
-    _data = nullptr;
-    if (_size > 0) {
-        _data = new ValueType[_size];
-        for (size_t i = 0; i < _size; ++i) {
-            _data[i] = vector[i];
-        }
+    _capacity = vector._capacity;
+    _data = new ValueType[_capacity];
+    for (size_t i = 0; i < _size; ++i) {
+        _data[i] = vector[i];
     }
 }
 
 Vector::Vector(Vector&& vector) noexcept {
     _size = vector.size();
+    _capacity = vector._capacity;
     _data = vector._data;
     vector._size = 0;
     vector._data = nullptr; 
+    vector._capacity = 0;
 }
 
 
 Vector::~Vector() {
     _size = 0;
+    _capacity = 0;
     delete[] _data;
 }
 
@@ -58,39 +60,46 @@ const ValueType& Vector::operator[](const size_t idx) const {
 }
 
 
-void Vector::insert(const ValueType& value, const size_t idx) {
+void Vector::insert(const size_t idx, const ValueType& value) {
     if (idx > size()) {
-        throw std::out_of_range("Out of range");
+        throw std::out_of_range("Insert out of range");
     }
 
-    ValueType* newData = new ValueType[size() + 1];
-    for (size_t i = 0; i < size() + 1; i++) {
-        if (i < idx) {
-            newData[i] = this->at(i);
-        }
-        else if (i > idx){
-            newData[i] = this->at(i - 1);
+    bool reallocation = false;
+    ValueType* data = _data;
+    if (_size == _capacity) {
+        reallocation = true;
+        _capacity *= ResizeFactor;
+        data = new ValueType[_capacity];
+        for (size_t i = 0; i < idx; i++) {
+            data[i] = this->at(i);
         }
     }
-    newData[idx] = value;
+    for (int i = size(); i > idx; i--) {
+        data[i] = this->at(i - 1);
+    }
+    if (reallocation) {
+        delete[] _data;
+        _data = data;
+    }
     _size = _size + 1;
-    delete[] _data;
-    _data = newData;
+    this->at(idx) = value;
 }
 
 void Vector::pushBack(const ValueType& value) {
-    this->insert(value, size());
+    this->insert(size(), value);
 }
 
 void Vector::pushFront(const ValueType& value) {
-    this->insert(value, 0);
+    this->insert(0, value);
 }
 
 
 void Vector::clear() {
     delete[] _data;
-    _data = nullptr;
     _size = 0;
+    _capacity = 1;
+    _data = new ValueType[_capacity];
 }
 
 void Vector::erase(const size_t idx) {
@@ -103,20 +112,30 @@ void Vector::erase(const size_t idx, const size_t len) {
     }
 
     size_t realLen = len;
-    if (idx + len  - 1 >= size()) {
+    if (idx + len - 1 >= size()) {
         realLen = size() - idx;
     }
     size_t newSize = size() - realLen;
-    ValueType* newData = new ValueType[newSize];
-    for (size_t i = 0; i < idx; i++) {
-        newData[i] = this->at(i);
+    bool reallocation = false;
+    ValueType* data = _data;
+
+    if (1.0 * newSize / _capacity <= SizeFactor) {
+        reallocation = true;
+        _capacity /= ResizeFactor;
+        data = new ValueType[_capacity];
+        for (size_t i = 0; i < idx; i++) {
+            data[i] = this->at(i);
+        }
     }
     for (size_t i = idx; i < newSize; i++) {
-        newData[i] = this->at(i + realLen);
+        data[i] = this->at(i + realLen);
+    }
+
+    if (reallocation) {
+        delete[] _data;
+        _data = data;
     }
     _size = newSize;
-    delete[] _data;
-    _data = newData;
 }
     
 void Vector::popBack() {

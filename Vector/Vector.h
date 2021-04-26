@@ -4,8 +4,12 @@
 
 #include "IVector.h"
 
+const size_t ResizeFactor = 2;
+const double SizeFactor = 1.0 / (ResizeFactor * ResizeFactor);
+
 class Vector: public IVector {
 private:
+    size_t _capacity;
     size_t _size;
     ValueType* _data;
 public:
@@ -22,7 +26,7 @@ public:
 
     void pushBack(const ValueType& value) override;
     void pushFront(const ValueType& value) override;
-    void insert(const ValueType& value, const size_t idx) override;
+    void insert(const size_t idx, const ValueType& value) override;
     
     void clear() override;
     void erase(const size_t idx) override;

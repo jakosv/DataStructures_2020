@@ -12,7 +12,7 @@ public:
 
     virtual void pushBack(const ValueType& value) = 0;
     virtual void pushFront(const ValueType& value) = 0;
-    virtual void insert(const ValueType& value, size_t idx) = 0;
+    virtual void insert(size_t idx, const ValueType& value) = 0;
     
     virtual void clear() = 0;
     virtual void erase(const size_t idx) = 0;
