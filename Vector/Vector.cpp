@@ -86,6 +86,14 @@ void Vector::insert(const size_t idx, const ValueType& value) {
     this->at(idx) = value;
 }
 
+void Vector::insert(const Iterator& it, const ValueType& value) {
+    if (it.getPtr() == nullptr || it > this->end() || it < this->begin()) {
+        throw std::out_of_range("Insert out of range");
+    }
+
+    this->insert(it - this->begin(), value);
+}
+
 void Vector::pushBack(const ValueType& value) {
     this->insert(size(), value);
 }
@@ -137,6 +145,14 @@ void Vector::erase(const size_t idx, const size_t len) {
     }
     _size = newSize;
 }
+
+void Vector::erase(const Iterator& it) {
+    if (it.getPtr() == nullptr || it >= this->end() || it < this->begin()) {
+        throw std::out_of_range("Erase out of range"); 
+    }
+
+    this->erase(it - this->begin());
+}
     
 void Vector::popBack() {
     if (size() == 0) {
@@ -163,13 +179,17 @@ size_t Vector::find(const ValueType& value) const {
 
 
 Vector::Iterator::Iterator(ValueType* ptr) : _ptr(ptr) {}
+    
+Vector::Iterator::Iterator(const Vector::Iterator& other) 
+    : _ptr(other._ptr) {}
 
-ValueType& Vector::Iterator::operator*() {
-    return *_ptr;
+Vector::Iterator& Vector::Iterator::operator=(const Vector::Iterator& other) {
+    _ptr = other._ptr;
+    return *this;
 }
 
-ValueType* Vector::Iterator::operator->() {
-    return _ptr;
+ValueType& Vector::Iterator::operator*() const {
+    return *_ptr;
 }
 
 // prefix
@@ -185,22 +205,42 @@ Vector::Iterator Vector::Iterator::operator++(int) {
     return temp;
 }
 
-bool Vector::Iterator::operator!=(const Vector::Iterator& other) {
+bool Vector::Iterator::operator!=(const Vector::Iterator& other) const {
     return _ptr != other._ptr;
 }
 
-bool Vector::Iterator::operator==(const Vector::Iterator& other) {
+bool Vector::Iterator::operator==(const Vector::Iterator& other) const {
     return !(*this != other);
 }
 
-std::ptrdiff_t Vector::Iterator::operator-(const Vector::Iterator& other) {
+bool Vector::Iterator::operator<(const Vector::Iterator& other) const {
+    return _ptr < other._ptr;
+}
+
+bool Vector::Iterator::operator>(const Vector::Iterator& other) const {
+    return _ptr > other._ptr; 
+}
+
+bool Vector::Iterator::operator<=(const Vector::Iterator& other) const {
+    return !(*this > other);
+}
+
+bool Vector::Iterator::operator>=(const Vector::Iterator& other) const {
+    return !(*this < other);
+}
+
+std::ptrdiff_t Vector::Iterator::operator-(const Vector::Iterator& other) const {
     return _ptr - other._ptr;
 }
 
-Vector::Iterator Vector::begin() {
+ValueType* Vector::Iterator::getPtr() const {
+    return _ptr;
+}
+
+Vector::Iterator Vector::begin() const {
     return Vector::Iterator(&_data[0]);
 }
 
-Vector::Iterator Vector::end() noexcept {
+Vector::Iterator Vector::end() const noexcept {
     return Vector::Iterator(&_data[size()]);
 }
