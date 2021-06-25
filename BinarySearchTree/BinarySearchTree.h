@@ -18,25 +18,25 @@ private:
     Node* _root;    
     size_t _size;
 
-    Node* search(Node* node, const T& value) const; 
-    Node* addTo(Node* node, const T& value);
-    Node* deleteTree(Node* root, const T& value, bool& wasDeleted);
-    Node* minimum(Node* node) const;
-    void destroy(Node* node);
-    void print(Node* node, std::ostream& out) const;
-    void copyTree(Node* root, Node* otherRoot);
+    Node* _search(Node* node, const T& value) const; 
+    Node* _addTo(Node* node, const T& value);
+    Node* _deleteTree(Node* root, const T& value, bool& wasDeleted);
+    Node* _minimum(Node* node) const;
+    void _destroy(Node* node);
+    void _printTree(Node* node, std::ostream& out) const;
+    void _copyTree(Node* root, Node* otherRoot);
 
 public:
     BinarySearchTree();
     BinarySearchTree(const BinarySearchTree<T>& copy);
-    BinarySearchTree(BinarySearchTree<T>&& copy);
+    BinarySearchTree(BinarySearchTree<T>&& copy) noexcept;
     BinarySearchTree& operator=(const BinarySearchTree<T>& copy);
-    BinarySearchTree& operator=(BinarySearchTree<T>&& copy);
+    BinarySearchTree& operator=(BinarySearchTree<T>&& copy) noexcept;
     ~BinarySearchTree();
 
     void add(const T& value);
     void remove(const T& value);
-    void printTree(std::ostream& out = std::cout) const;
+    void print(std::ostream& out = std::cout) const;
     bool find(const T& value) const;
     void clear();
 
@@ -44,7 +44,7 @@ public:
 };
 
 template<class T>    
-typename BinarySearchTree<T>::Node* BinarySearchTree<T>::search(
+typename BinarySearchTree<T>::Node* BinarySearchTree<T>::_search(
                                                         Node* node,
                                                         const T& value) const
 {
@@ -52,32 +52,32 @@ typename BinarySearchTree<T>::Node* BinarySearchTree<T>::search(
         return nullptr;
     }
     else if (node->_value < value) {
-        return search(node->_right, value);
+        return _search(node->_right, value);
     }
     else if (node->_value > value){
-        return search(node->_left, value); 
+        return _search(node->_left, value); 
     }
     return node;
 }
 
 template<class T>
-typename BinarySearchTree<T>::Node* BinarySearchTree<T>::addTo(Node* node,
+typename BinarySearchTree<T>::Node* BinarySearchTree<T>::_addTo(Node* node,
                                                             const T& value)
 {
     if (node == nullptr) {
         return new Node(value);
     }
     else if (node->_value < value) {
-        node->_right = addTo(node->_right, value);
+        node->_right = _addTo(node->_right, value);
     }
     else if (node->_value >= value) {
-        node->_left = addTo(node->_left, value);
+        node->_left = _addTo(node->_left, value);
     }
     return node;
 }
 
 template<class T>
-typename BinarySearchTree<T>::Node* BinarySearchTree<T>::deleteTree(
+typename BinarySearchTree<T>::Node* BinarySearchTree<T>::_deleteTree(
                                                             Node* root, 
                                                             const T& value,
                                                             bool& wasDeleted)
@@ -86,14 +86,14 @@ typename BinarySearchTree<T>::Node* BinarySearchTree<T>::deleteTree(
         return nullptr;
     }
     else if (root->_value < value) {
-        root->_right = deleteTree(root->_right, value, wasDeleted);
+        root->_right = _deleteTree(root->_right, value, wasDeleted);
     }
     else if (root->_value > value) {
-        root->_left = deleteTree(root->_left, value, wasDeleted);
+        root->_left = _deleteTree(root->_left, value, wasDeleted);
     }
     else if (root->_left != nullptr && root->_right != nullptr) {
-        root->_value = (minimum(root->_right))->_value;        
-        root->_right = deleteTree(root->_right, root->_value, wasDeleted);
+        root->_value = (_minimum(root->_right))->_value;        
+        root->_right = _deleteTree(root->_right, root->_value, wasDeleted);
     }
     else {
         Node* newRoot = nullptr;
@@ -103,7 +103,7 @@ typename BinarySearchTree<T>::Node* BinarySearchTree<T>::deleteTree(
         else if (root->_right != nullptr) {
             newRoot = root->_right;
         }
-        delete[] root;
+        delete root;
         root = newRoot;
         wasDeleted = true;
     }
@@ -111,46 +111,46 @@ typename BinarySearchTree<T>::Node* BinarySearchTree<T>::deleteTree(
 }
 
 template<class T>
-typename BinarySearchTree<T>::Node* BinarySearchTree<T>::minimum(
+typename BinarySearchTree<T>::Node* BinarySearchTree<T>::_minimum(
                                                             Node* node) const
 {
     if (node->_left == nullptr) {
         return node;
     }
-    return minimum(node->_left);
+    return _minimum(node->_left);
 }
 
 template<class T>    
-void BinarySearchTree<T>::destroy(Node* node) {
+void BinarySearchTree<T>::_destroy(Node* node) {
     if (node == nullptr) {
         return;
     }
-    destroy(node->_left);
-    destroy(node->_right);
-    delete[] node;
+    _destroy(node->_left);
+    _destroy(node->_right);
+    delete node;
 }
 
 template<class T>
-void BinarySearchTree<T>::print(Node* node, std::ostream& out) const {
+void BinarySearchTree<T>::_printTree(Node* node, std::ostream& out) const {
     if (node != nullptr) {
-        print(node->_left, out);
+        _printTree(node->_left, out);
         out << node->_value << " ";
-        print(node->_right, out);
+        _printTree(node->_right, out);
     }
 }
 
 template<class T>
-void BinarySearchTree<T>::copyTree(Node* root, Node* otherRoot) {
+void BinarySearchTree<T>::_copyTree(Node* root, Node* otherRoot) {
     root->_value = otherRoot->_value;
     root->_left = nullptr;
     root->_right = nullptr;
     if (otherRoot->_left != nullptr) {
         root->_left = new Node();
-        copyTree(root->_left, otherRoot->_left);
+        _copyTree(root->_left, otherRoot->_left);
     }
     if (otherRoot->_right != nullptr) {
         root->_right = new Node();
-        copyTree(root->_right, otherRoot->_right);
+        _copyTree(root->_right, otherRoot->_right);
     }
 }
 
@@ -167,12 +167,12 @@ BinarySearchTree<T>::BinarySearchTree(const BinarySearchTree<T>& copy)
     _root = nullptr;
     if (copy.size() > 0) {
         _root = new Node();
-        copyTree(_root, copy._root);
+        _copyTree(_root, copy._root);
     }
 }
 
 template<class T>
-BinarySearchTree<T>::BinarySearchTree(BinarySearchTree<T>&& copy) {
+BinarySearchTree<T>::BinarySearchTree(BinarySearchTree<T>&& copy) noexcept {
     _size = copy.size();
     _root = copy._root;
     copy._root = nullptr;
@@ -188,14 +188,16 @@ BinarySearchTree<T>& BinarySearchTree<T>::operator=(
     _root = nullptr;
     if (copy.size() > 0) {
         _root = new Node();
-        copyTree(_root, copy._root);
+        _copyTree(_root, copy._root);
     }
 
     return *this;
 }
 
 template<class T>
-BinarySearchTree<T>& BinarySearchTree<T>::operator=(BinarySearchTree<T>&& copy) {
+BinarySearchTree<T>& BinarySearchTree<T>::operator=(BinarySearchTree<T>&& copy) 
+                                                                    noexcept
+{
     this->clear();
     _size = copy.size();
     _root = copy._root;
@@ -216,7 +218,7 @@ void BinarySearchTree<T>::add(const T& value) {
         _root = new Node(value);
     }
     else {
-        addTo(_root, value);
+        _addTo(_root, value);
     }
     _size++;
 }
@@ -224,27 +226,27 @@ void BinarySearchTree<T>::add(const T& value) {
 template<class T>
 void BinarySearchTree<T>::remove(const T& value) {
     bool wasDeleted = false;
-    _root = deleteTree(_root, value, wasDeleted); // returns the new root
+    _root = _deleteTree(_root, value, wasDeleted); // returns the new root
     if (wasDeleted) {
         _size--;
     }
 }
 
 template<class T>
-void BinarySearchTree<T>::printTree(std::ostream& out) const {
-    print(_root, out);
+void BinarySearchTree<T>::print(std::ostream& out) const {
+    _printTree(_root, out);
 }
 
 template<class T>
 bool BinarySearchTree<T>::find(const T& value) const {
-    Node* node = search(_root, value);
+    Node* node = _search(_root, value);
     
     return !(node == nullptr);
 }
 
 template<class T>
 void BinarySearchTree<T>::clear() {
-    destroy(_root);
+    _destroy(_root);
     _size = 0;
     _root = nullptr;
 }
