@@ -96,20 +96,15 @@ typename BinarySearchTree<T>::Node* BinarySearchTree<T>::deleteTree(
         root->_right = deleteTree(root->_right, root->_value, wasDeleted);
     }
     else {
+        Node* newRoot = nullptr;
         if (root->_left != nullptr) {
-            Node* leftNode = root->_left;
-            delete[] root;
-            root = leftNode;
+            newRoot = root->_left;
         }
         else if (root->_right != nullptr) {
-            Node* rightNode = root->_right;
-            delete[] root;
-            root = rightNode;
+            newRoot = root->_right;
         }
-        else {
-            delete[] root;
-            root = nullptr;
-        }
+        delete[] root;
+        root = newRoot;
         wasDeleted = true;
     }
     return root;
