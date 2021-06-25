@@ -35,7 +35,7 @@ Set<T, Container>::Set(Set<T, Container>&& other) noexcept
     : _container(std::move(other._container)) {}
 
 template<class T, template<class> class Container>
-Set<T, container>& Set<T, Container>::operator=(const Set<T, Container>& other) {
+Set<T, Container>& Set<T, Container>::operator=(const Set<T, Container>& other) {
     _container = other._container; 
 }
 
