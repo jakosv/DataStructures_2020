@@ -64,7 +64,7 @@ public:
     void add(const T& value);
     void remove(const T& value);
     void print(std::ostream& out = std::cout) const;
-    bool find(const T& value) const;
+    Iterator find(const T& value) const;
     void clear();
 
     size_t size() const;
@@ -317,10 +317,12 @@ void BinarySearchTree<T>::print(std::ostream& out) const {
 }
 
 template<class T>
-bool BinarySearchTree<T>::find(const T& value) const {
+typename BinarySearchTree<T>::Iterator BinarySearchTree<T>::find(
+                                                    const T& value) const
+{
     Node* node = _search(_root, value);
     
-    return !(node == nullptr);
+    return Iterator(node);
 }
 
 template<class T>
@@ -338,11 +340,18 @@ size_t BinarySearchTree<T>::size() const {
 
 template<class T>
 typename BinarySearchTree<T>::Iterator BinarySearchTree<T>::begin() {
+    if (_root == nullptr) {
+        return nullptr;
+    }
+    else if (_root->_left == nullptr) {
+        return _root;
+    }
     return Iterator(_minimum(_root->_left));
 }
 
 template<class T>
-typename BinarySearchTree<T>::Iterator BinarySearchTree<T>::end() noexcept {
+typename BinarySearchTree<T>::Iterator BinarySearchTree<T>::end() noexcept
+{
     return Iterator(nullptr);
 }
 
@@ -394,6 +403,10 @@ template<class T>
 typename BinarySearchTree<T>::Iterator& 
                                 BinarySearchTree<T>::Iterator::operator++()
 {
+    if (_ptr == nullptr) {
+        return *this;
+    }
+
     if (_ptr->_right != nullptr) {
         _ptr = _minimum(_ptr->_right);
         return *this;
@@ -422,6 +435,10 @@ template<class T>
 typename BinarySearchTree<T>::Iterator& 
                                 BinarySearchTree<T>::Iterator::operator--()
 {
+    if(_ptr == nullptr) {
+        return *this;
+    }
+
     if (_ptr->_left != nullptr) {
         _ptr = _maximum(_ptr->_left);
         return *this;
