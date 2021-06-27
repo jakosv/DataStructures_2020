@@ -59,7 +59,7 @@ Pair<KeyType, ValueType>& Pair<KeyType, ValueType>::operator=(Pair&& other)
 
 template<class KeyType, class ValueType>
 bool Pair<KeyType, ValueType>::operator==(const Pair& other) {
-    return (key == other.key && value == other.value);
+    return (key == other.key);
 }
 
 template<class KeyType, class ValueType>
@@ -69,9 +69,6 @@ bool Pair<KeyType, ValueType>::operator!=(const Pair& other) {
 
 template<class KeyType, class ValueType>
 bool Pair<KeyType, ValueType>::operator<(const Pair& other) {
-    if (key == other.key) {
-        return (value < other.value);
-    }
     return key < other.key;
 }
 
