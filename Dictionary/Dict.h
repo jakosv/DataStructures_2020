@@ -43,6 +43,8 @@ public:
     void removeKey(const KeyType& key);
     const ValueType& get(const KeyType& key);
     bool hasKey(const KeyType& key);
+
+    size_t size() const;
     void clear();
 
     Iterator begin();
@@ -138,6 +140,11 @@ bool Dict<KeyType, ValueType, Container>::hasKey(const KeyType& key) {
 template<class KeyType, class ValueType, template<class> class Container>
 void Dict<KeyType, ValueType, Container>::clear() {
     _container.clear();
+}
+
+template<class KeyType, class ValueType, template<class> class Container>
+size_t Dict<KeyType, ValueType, Container>::size() const {
+    return _container.size();
 }
 
 template<class KeyType, class ValueType, template<class> class Container>
